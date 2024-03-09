@@ -20,36 +20,30 @@ services:
     networks:
       - kafka-test0001
     environment:
-      KAFKA_ZOOKEEPER_CONNECT: 192.168.1.15:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://192.168.1.15:9092
+      KAFKA_ZOOKEEPER_CONNECT: <PRIVATE_IP>:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://<PRIVATE_IP>:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     restart: always
     volumes:
       - ./data/kafka:/kafka
       
-  # kafka-ui:
-  #   container_name: kafka-ui
-  #   image: provectuslabs/kafka-ui:latest
-  #   ports:
-  #     - 8080:8080
-  #   depends_on:
-  #     - zookeeper
-  #     - kafka
-  #   networks:
-  #     - kafka-test0001
-  #   environment:
-  #     KAFKA_CLUSTERS_0_NAME: local
-  #     KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
-  #     KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
-  #     KAFKA_CLUSTERS_0_JMXPORT: 9997
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8080:8080
+    depends_on:
+      - zookeeper
+      - kafka
+    networks:
+      - kafka-test0001
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: <PRIVATE_IP>:9092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: <PRIVATE_IP>:2181
+      KAFKA_CLUSTERS_0_JMXPORT: 9997
 
 networks:
   kafka-test0001:
     name: kafka-test0001
     external: false
-
-# docker run -d -p 9092:9092 \
-# -e KAFKA_ZOOKEEPER_CONNECT=192.168.1.15:2181 \
-# -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://192.168.1.15:9092 \
-# -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
-# confluentinc/cp-kafka
